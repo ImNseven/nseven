@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'cert-checker12345'  # Замените на свой секретный ключ
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Для разработки установите True, для продакшена - False
+DEBUG = False  # Для продакшена всегда False
 
 # Разрешенные хосты
 ALLOWED_HOSTS = ['.onrender.com']
