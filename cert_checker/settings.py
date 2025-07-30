@@ -10,13 +10,13 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-your-secret-key-here'  # Замените на свой секретный ключ
+SECRET_KEY = 'cert-checker12345'  # Замените на свой секретный ключ
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Для разработки установите True, для продакшена - False
+DEBUG = False  # Для разработки установите True, для продакшена - False
 
 # Разрешенные хосты
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'your-domain.com']
+ALLOWED_HOSTS = ['.onrender.com']
 
 # Настройки безопасности (для продакшена)
 if not DEBUG:
@@ -73,8 +73,12 @@ WSGI_APPLICATION = 'cert_checker.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'render_db'),
+        'USER': os.environ.get('POSTGRES_USER', 'render_user'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'render_password'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
 }
 
@@ -114,29 +118,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Celery Configuration
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Europe/Moscow'
 
-# Celery Beat Schedule
-CELERY_BEAT_SCHEDULE = {
-    'check-certificate-expiry': {
-        'task': 'certificates.tasks.check_certificate_expiry',
-        'schedule': 86400.0,  # Каждые 24 часа
-    },
-    'send-inspection-reminders': {
-        'task': 'certificates.tasks.send_inspection_reminders',
-        'schedule': 86400.0,  # Каждые 24 часа
-    },
-    'cleanup-old-files': {
-        'task': 'certificates.tasks.cleanup_old_files',
-        'schedule': 604800.0,  # Каждую неделю
-    },
-}
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -148,7 +130,7 @@ EMAIL_HOST_PASSWORD = '62a-Ar8-9CA-zUz'
 DEFAULT_FROM_EMAIL = 'info@export-center.ru'
 
 # PDF Generation
-WKHTMLTOPDF_CMD = 'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+WKHTMLTOPDF_CMD = '/usr/bin/wkhtmltopdf'
 
 # Site URL
 SITE_URL = 'http://127.0.0.1:8000'
@@ -206,11 +188,5 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 SESSION_COOKIE_AGE = 3600  # 1 час
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-# Cache Settings (опционально)
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
-    }
-}
+
 
